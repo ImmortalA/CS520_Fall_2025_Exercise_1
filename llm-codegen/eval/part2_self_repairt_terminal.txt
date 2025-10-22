@@ -1,0 +1,23 @@
+(sat_env) D:\Umass\Semester_3\cs520\exercise_1>python generate_self_repair.py
+============================================================
+Self-Repair Code Generation (Part 2)
+============================================================
+
+This script generates self-repair solutions using Gemini API
+for the failures identified in Part 1.
+
+
+Generating self-repair for humaneval_25/mistral/cot...
+Issue: TIMEOUT on large primes - inefficient algorithm (divisor += 1 without sqrt optimization)
+✓ Saved to llm-codegen\generations\humaneval_25\mistral\self_repair\self_repair_sample1.py
+
+Generating self-repair for humaneval_54/mistral/cot...
+Issue: Logic error - Counter checks frequency but should only check unique characters
+✓ Saved to llm-codegen\generations\humaneval_54\mistral\self_repair\self_repair_sample1.py
+
+Generating self-repair for humaneval_108/gemini/cot...
+Issue: Edge case handling - incorrect negative number digit sum calculation
+✓ Saved to llm-codegen\generations\humaneval_108\gemini\self_repair\self_repair_sample1.py
+
+============================================================
+✓ Self-repair generation complete!
