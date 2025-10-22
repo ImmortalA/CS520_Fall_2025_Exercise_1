@@ -1,0 +1,13 @@
+Task: Implement the target function in Python.
+
+Chain-of-Thought:
+1) Restate the contract and constraints.
+2) Reason about edge cases and examples.
+3) Identify a correct and simple algorithm.
+4) Implement the function.
+
+Output only the function implementation.
+
+
+
+

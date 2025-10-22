@@ -1,0 +1,7 @@
+{
+  "problem_id": "humaneval_54",
+  "task_id": "HumanEval/54",
+  "function_name": "same_chars",
+  "description": "def same_chars(s0: str, s1: str):\n    \"\"\"\n    Check if two words have the same characters.\n    >>> same_chars('eabcdzzzz', 'dddzzzzzzzddeddabc')\n    True\n    >>> same_chars('abcd', 'dddddddabc')\n    True\n    >>> same_chars('dddddddabc', 'abcd')\n    True\n    >>> same_chars('eabcd', 'dddddddabc')\n    False\n    >>> same_chars('abcd', 'dddddddabce')\n    False\n    >>> same_chars('eabcdzzzz', 'dddzzzzzzzddddabc')\n    False\n    \"\"\"",
+  "canonical_solution": "\n    return set(s0) == set(s1)\n\n"
+}

@@ -1,0 +1,515 @@
+\documentclass[11pt]{article}
+\usepackage[utf-8]{inputenc}
+\usepackage{geometry}
+\usepackage{booktabs}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{hyperref}
+
+\geometry{margin=1in}
+
+\lstset{
+    basicstyle=\ttfamily\small,
+    breaklines=true,
+    frame=single,
+    language=Python,
+    showstringspaces=false
+}
+
+\title{Exercise 1 - Part 1: Prompt Design \& Code Generation}
+\author{CS520 - Programming Languages}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+
+This report presents the results of Part 1 of Exercise 1, focusing on prompt design and code generation using Large Language Models (LLMs). We evaluated two distinct model families across 10 programming problems from the HumanEval+ dataset using two prompting strategies: Chain-of-Thought (CoT) and Stepwise Chain-of-Thought (SCoT).
+
+\section{LLM Families}
+
+We selected two model families from different providers:
+
+\begin{itemize}
+    \item \textbf{Gemini 2.5 Flash} (Google DeepMind family)
+    \begin{itemize}
+        \item Model: \texttt{models/gemini-2.5-flash}
+        \item Access Method: Google AI Studio API
+        \item Provider: Google DeepMind
+    \end{itemize}
+    
+    \item \textbf{Mistral Large} (Mistral AI family)
+    \begin{itemize}
+        \item Model: \texttt{mistral-large-latest}
+        \item Access Method: Mistral La Plateforme API
+        \item Provider: Mistral AI
+    \end{itemize}
+\end{itemize}
+
+These two families represent distinct architectural approaches and training methodologies, ensuring diverse evaluation perspectives as required by the assignment.
+
+\section{Problem Selection}
+
+We selected 10 problems from the HumanEval+ dataset \cite{humanevalplus}, chosen to span different difficulty levels and algorithm types:
+
+\begin{table}[h]
+\centering
+\begin{tabular}{llp{8cm}}
+\toprule
+\textbf{Problem ID} & \textbf{Function} & \textbf{Description} \\
+\midrule
+HumanEval/0 & has\_close\_elements & Check if any two numbers in a list are closer than a threshold \\
+HumanEval/1 & separate\_paren\_groups & Parse and separate nested parentheses groups \\
+HumanEval/10 & make\_palindrome & Create a palindrome from a given string \\
+HumanEval/12 & longest & Find the longest string in a list \\
+HumanEval/17 & parse\_music & Convert music notation to integer list \\
+HumanEval/25 & factorize & Return prime factors of an integer \\
+HumanEval/31 & is\_prime & Check if a number is prime \\
+HumanEval/54 & same\_chars & Check if two strings have the same characters \\
+HumanEval/61 & correct\_bracketing & Validate bracket balancing \\
+HumanEval/108 & count\_nums & Count numbers with positive digit sum \\
+\bottomrule
+\end{tabular}
+\caption{Selected problems from HumanEval+ dataset}
+\label{tab:problems}
+\end{table}
+
+\textbf{Rationale for Selection:} These problems cover diverse computational tasks including:
+\begin{itemize}
+    \item List/array operations (HumanEval/0, HumanEval/12)
+    \item String manipulation (HumanEval/1, HumanEval/10, HumanEval/54)
+    \item Number theory (HumanEval/25, HumanEval/31, HumanEval/108)
+    \item Data structure manipulation (HumanEval/17, HumanEval/61)
+\end{itemize}
+
+\section{Prompting Strategies}
+
+\subsection{Chain-of-Thought (CoT)}
+
+The CoT strategy encourages the model to reason through the problem step-by-step before implementing the solution.
+
+\subsubsection{CoT Prompt Template}
+
+\begin{lstlisting}[caption=CoT Generic Template (from cot\_generic.txt)]
+Task: Implement the target function in Python.
+
+Chain-of-Thought:
+1) Restate the contract and constraints.
+2) Reason about edge cases and examples.
+3) Identify a correct and simple algorithm.
+4) Implement the function.
+
+Output only the function implementation.
+\end{lstlisting}
+
+\subsubsection{Example: Complete CoT Prompt for HumanEval/0}
+
+This is the exact prompt sent to both Gemini and Mistral APIs for problem humaneval\_0:
+
+\begin{lstlisting}[caption=Complete CoT Prompt - HumanEval/0]
+Task: Implement the target function in Python.
+
+Chain-of-Thought:
+1) Restate the contract and constraints.
+2) Reason about edge cases and examples.
+3) Identify a correct and simple algorithm.
+4) Implement the function.
+
+Output only the function implementation.
+
+Problem:
+from typing import List
+
+
+def has_close_elements(numbers: List[float], threshold: float) -> bool:
+    """ Check if in given list of numbers, are any two numbers 
+    closer to each other than given threshold.
+    >>> has_close_elements([1.0, 2.0, 3.0], 0.5)
+    False
+    >>> has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3)
+    True
+    """
+
+Function name: has_close_elements
+
+IMPORTANT: Output ONLY the function implementation code. 
+No explanations, no markdown.
+\end{lstlisting}
+
+\subsection{Stepwise Chain-of-Thought (SCoT)}
+
+The SCoT strategy provides more explicit step-by-step guidance, including a verification step.
+
+\subsubsection{SCoT Prompt Template}
+
+\begin{lstlisting}[caption=SCoT Generic Template (from scot\_generic.txt)]
+Task: Implement the target function as specified.
+
+Stepwise Chain-of-Thought Plan:
+1) Restate the function contract precisely.
+2) Identify edge cases and constraints.
+3) Outline a step-by-step algorithm.
+4) Implement the function in Python, adhering to the contract.
+5) Double-check correctness on edge cases.
+
+Output: Only the function implementation; no extra prints.
+\end{lstlisting}
+
+\subsubsection{Example: Complete SCoT Prompt for HumanEval/108}
+
+This is the exact prompt sent to both Gemini and Mistral APIs for problem humaneval\_108 (one of the failure cases):
+
+\begin{lstlisting}[caption=Complete SCoT Prompt - HumanEval/108]
+Task: Implement the target function as specified.
+
+Stepwise Chain-of-Thought Plan:
+1) Restate the function contract precisely.
+2) Identify edge cases and constraints.
+3) Outline a step-by-step algorithm.
+4) Implement the function in Python, adhering to the contract.
+5) Double-check correctness on edge cases.
+
+Output: Only the function implementation; no extra prints.
+
+Problem:
+def count_nums(arr):
+    """
+    Write a function count_nums which takes an array of integers 
+    and returns the number of elements which has a sum of digits > 0.
+    If a number is negative, then its first signed digit will be 
+    negative:
+    e.g. -123 has signed digits -1, 2, and 3.
+    >>> count_nums([]) == 0
+    >>> count_nums([-1, 11, -11]) == 1
+    >>> count_nums([1, 1, 2]) == 3
+    """
+
+Function name: count_nums
+
+IMPORTANT: Output ONLY the function implementation code. 
+No explanations, no markdown.
+\end{lstlisting}
+
+\section{Experimental Setup}
+
+\subsection{Generation Process}
+
+For each of the 10 problems, we generated solutions using:
+\begin{itemize}
+    \item 2 model families (Gemini, Mistral)
+    \item 2 prompting strategies (CoT, SCoT)
+    \item Total: 40 generated solutions (10 $\times$ 2 $\times$ 2)
+\end{itemize}
+
+All generations were performed via API calls to ensure consistency and reproducibility. Generated code was saved in the following directory structure:
+
+\texttt{llm-codegen/generations/<problem\_id>/<family>/<strategy>/<strategy>\_sample1.py}
+
+\subsection{Evaluation Methodology}
+
+Solutions were evaluated using the HumanEval+ comprehensive test suites, which include:
+\begin{itemize}
+    \item Base test cases from the original HumanEval dataset
+    \item Extended test cases covering edge cases and boundary conditions
+    \item Automated assertion checking with numerical tolerance where appropriate
+\end{itemize}
+
+The pass@k metric was computed using the standard HumanEval formula:
+\[ \text{pass}@k = 1 - \frac{\binom{n-c}{k}}{\binom{n}{k}} \]
+
+where $n$ is the number of samples and $c$ is the number of correct solutions.
+
+A 10-second timeout was implemented to catch inefficient implementations that would otherwise hang on large inputs.
+
+\section{Results}
+
+\subsection{Overall Performance}
+
+Table~\ref{tab:results} presents the complete results for all 40 generated solutions.
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{llrrrr}
+\toprule
+\textbf{Problem} & \textbf{Family} & \textbf{Strategy} & \textbf{Correct} & \textbf{pass@1} & \textbf{pass@3} \\
+\midrule
+humaneval\_0 & gemini & cot & 1/1 & 1.000 & 1.000 \\
+humaneval\_0 & gemini & scot & 1/1 & 1.000 & 1.000 \\
+humaneval\_0 & mistral & cot & 1/1 & 1.000 & 1.000 \\
+humaneval\_0 & mistral & scot & 1/1 & 1.000 & 1.000 \\
+\midrule
+humaneval\_1 & gemini & cot & 1/1 & 1.000 & 1.000 \\
+humaneval\_1 & gemini & scot & 1/1 & 1.000 & 1.000 \\
+humaneval\_1 & mistral & cot & 1/1 & 1.000 & 1.000 \\
+humaneval\_1 & mistral & scot & 1/1 & 1.000 & 1.000 \\
+\midrule
+humaneval\_10 & gemini & cot & 1/1 & 1.000 & 1.000 \\
+humaneval\_10 & gemini & scot & 1/1 & 1.000 & 1.000 \\
+humaneval\_10 & mistral & cot & 1/1 & 1.000 & 1.000 \\
+humaneval\_10 & mistral & scot & 1/1 & 1.000 & 1.000 \\
+\midrule
+humaneval\_12 & gemini & cot & 1/1 & 1.000 & 1.000 \\
+humaneval\_12 & gemini & scot & 1/1 & 1.000 & 1.000 \\
+humaneval\_12 & mistral & cot & 1/1 & 1.000 & 1.000 \\
+humaneval\_12 & mistral & scot & 1/1 & 1.000 & 1.000 \\
+\midrule
+humaneval\_17 & gemini & cot & 1/1 & 1.000 & 1.000 \\
+humaneval\_17 & gemini & scot & 1/1 & 1.000 & 1.000 \\
+humaneval\_17 & mistral & cot & 1/1 & 1.000 & 1.000 \\
+humaneval\_17 & mistral & scot & 1/1 & 1.000 & 1.000 \\
+\midrule
+humaneval\_31 & gemini & cot & 1/1 & 1.000 & 1.000 \\
+humaneval\_31 & gemini & scot & 1/1 & 1.000 & 1.000 \\
+humaneval\_31 & mistral & cot & 1/1 & 1.000 & 1.000 \\
+humaneval\_31 & mistral & scot & 1/1 & 1.000 & 1.000 \\
+\midrule
+humaneval\_61 & gemini & cot & 1/1 & 1.000 & 1.000 \\
+humaneval\_61 & gemini & scot & 1/1 & 1.000 & 1.000 \\
+humaneval\_61 & mistral & cot & 1/1 & 1.000 & 1.000 \\
+humaneval\_61 & mistral & scot & 1/1 & 1.000 & 1.000 \\
+\midrule
+\textbf{humaneval\_25} & gemini & cot & 1/1 & 1.000 & 1.000 \\
+\textbf{humaneval\_25} & gemini & scot & 1/1 & 1.000 & 1.000 \\
+\textbf{humaneval\_25} & mistral & cot & \textcolor{red}{0/1} & \textcolor{red}{0.000} & \textcolor{red}{0.000} \\
+\textbf{humaneval\_25} & mistral & scot & \textcolor{red}{0/1} & \textcolor{red}{0.000} & \textcolor{red}{0.000} \\
+\midrule
+\textbf{humaneval\_54} & gemini & cot & 1/1 & 1.000 & 1.000 \\
+\textbf{humaneval\_54} & gemini & scot & 1/1 & 1.000 & 1.000 \\
+\textbf{humaneval\_54} & mistral & cot & \textcolor{red}{0/1} & \textcolor{red}{0.000} & \textcolor{red}{0.000} \\
+\textbf{humaneval\_54} & mistral & scot & \textcolor{red}{0/1} & \textcolor{red}{0.000} & \textcolor{red}{0.000} \\
+\midrule
+\textbf{humaneval\_108} & gemini & cot & \textcolor{red}{0/1} & \textcolor{red}{0.000} & \textcolor{red}{0.000} \\
+\textbf{humaneval\_108} & gemini & scot & 1/1 & 1.000 & 1.000 \\
+\textbf{humaneval\_108} & mistral & cot & \textcolor{red}{0/1} & \textcolor{red}{0.000} & \textcolor{red}{0.000} \\
+\textbf{humaneval\_108} & mistral & scot & \textcolor{red}{0/1} & \textcolor{red}{0.000} & \textcolor{red}{0.000} \\
+\bottomrule
+\end{tabular}
+\caption{Complete evaluation results (failures highlighted in red)}
+\label{tab:results}
+\end{table}
+
+\subsection{Performance Summary}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Family} & \textbf{Strategy} & \textbf{Passed} & \textbf{Failed} & \textbf{Success Rate} \\
+\midrule
+Gemini & CoT & 9 & 1 & 90.0\% \\
+Gemini & SCoT & 10 & 0 & 100.0\% \\
+Mistral & CoT & 7 & 3 & 70.0\% \\
+Mistral & SCoT & 7 & 3 & 70.0\% \\
+\midrule
+\textbf{Overall} & & \textbf{33} & \textbf{7} & \textbf{82.5\%} \\
+\bottomrule
+\end{tabular}
+\caption{Performance summary by family and strategy}
+\label{tab:summary}
+\end{table}
+
+\subsection{Key Observations}
+
+\begin{enumerate}
+    \item \textbf{Gemini Outperforms Mistral}: Gemini achieved a higher success rate (95\% vs 70\%), demonstrating more robust code generation capabilities across both strategies.
+    
+    \item \textbf{SCoT Improves Gemini}: For Gemini, SCoT achieved perfect performance (100\%) compared to CoT (90\%). The additional structure in SCoT appears to help Gemini produce more reliable code.
+    
+    \item \textbf{Strategy Makes Less Difference for Mistral}: Both CoT and SCoT achieved 70\% for Mistral, suggesting that the failures stem from fundamental reasoning gaps rather than prompting strategy differences.
+    
+    \item \textbf{Problem-Specific Failures}: 
+    \begin{itemize}
+        \item humaneval\_25 (factorize): Both Mistral strategies failed due to algorithmic inefficiency (timeout on large primes)
+        \item humaneval\_54 (same\_chars): Both Mistral strategies failed (likely logic error)
+        \item humaneval\_108 (count\_nums): Gemini CoT and both Mistral strategies failed (complex edge case handling for negative numbers)
+    \end{itemize}
+\end{enumerate}
+
+\section{Detailed Analysis}
+
+\subsection{Perfect Performance Problems (7/10)}
+
+Both families achieved 100\% success on:
+\begin{itemize}
+    \item humaneval\_0 (has\_close\_elements)
+    \item humaneval\_1 (separate\_paren\_groups)
+    \item humaneval\_10 (make\_palindrome)
+    \item humaneval\_12 (longest)
+    \item humaneval\_17 (parse\_music)
+    \item humaneval\_31 (is\_prime)
+    \item humaneval\_61 (correct\_bracketing)
+\end{itemize}
+
+These problems have straightforward algorithmic solutions that both models understood and implemented correctly through both prompting strategies.
+
+\subsection{Problematic Cases}
+
+\textbf{humaneval\_25 (factorize)}
+
+\begin{itemize}
+    \item \textbf{Gemini}: Both strategies succeeded
+    \item \textbf{Mistral}: Both strategies failed with timeout
+    \item \textbf{Root Cause}: Mistral generated inefficient trial division (incrementing by 1) without the $\sqrt{n}$ optimization, causing timeouts on large prime inputs in the test suite
+\end{itemize}
+
+\textbf{humaneval\_54 (same\_chars)}
+
+\begin{itemize}
+    \item \textbf{Gemini}: Both strategies succeeded
+    \item \textbf{Mistral}: Both strategies failed
+    \item \textbf{Root Cause}: Likely incorrect character comparison logic (to be analyzed in Part 2)
+\end{itemize}
+
+\textbf{humaneval\_108 (count\_nums)}
+
+\begin{itemize}
+    \item \textbf{Gemini CoT}: Failed
+    \item \textbf{Gemini SCoT}: Succeeded
+    \item \textbf{Mistral}: Both strategies failed
+    \item \textbf{Root Cause}: Edge case handling for negative numbers and signed digit calculation. SCoT's explicit edge case enumeration step helped Gemini but not Mistral.
+\end{itemize}
+
+\section{Pass@k Metric Analysis}
+
+Since we generated only 1 sample per (problem, family, strategy) combination:
+\begin{itemize}
+    \item pass@1 = 1.0 if the single sample is correct, 0.0 otherwise
+    \item pass@3 = pass@1 (insufficient samples for meaningful pass@3 calculation)
+\end{itemize}
+
+For future work, generating 3+ samples per combination would enable more robust pass@3 evaluation to measure consistency across multiple generations.
+
+\section{Comparative Analysis}
+
+\subsection{Family Comparison}
+
+\begin{itemize}
+    \item \textbf{Gemini 2.5 Flash} demonstrated superior performance, particularly with SCoT prompting
+    \item \textbf{Mistral Large} struggled with algorithmic optimization (factorize) and complex edge cases (count\_nums, same\_chars)
+    \item Both families excelled on straightforward algorithmic problems
+\end{itemize}
+
+\subsection{Strategy Comparison}
+
+\begin{itemize}
+    \item \textbf{CoT vs SCoT for Gemini}: SCoT improved from 90\% to 100\%, suggesting benefit from explicit structure
+    \item \textbf{CoT vs SCoT for Mistral}: No improvement (both 70\%), indicating prompting strategy alone cannot overcome fundamental reasoning limitations
+    \item \textbf{Implication}: More capable models benefit more from structured prompting strategies
+\end{itemize}
+
+\section{Methodology Details}
+
+\subsection{Generation Pipeline}
+
+\begin{enumerate}
+    \item Problem specifications extracted from HumanEval+ dataset
+    \item Prompt templates combined with problem descriptions
+    \item API calls to Gemini and Mistral endpoints
+    \item Generated code saved with systematic naming convention
+    \item Automated evaluation using HumanEval+ test suites
+\end{enumerate}
+
+\subsection{Evaluation Command}
+
+\begin{lstlisting}[language=bash]
+python llm-codegen/eval/run_eval.py \
+  --data-dir llm-codegen/data \
+  --generations-dir llm-codegen/generations \
+  --tests-dir llm-codegen/tests \
+  --results llm-codegen/eval/results.csv
+\end{lstlisting}
+
+\section{Identified Failure Cases for Part 2}
+
+The following 7 failures provide excellent cases for debugging analysis in Part 2:
+
+\begin{enumerate}
+    \item humaneval\_25 / mistral / cot (Timeout - algorithmic inefficiency)
+    \item humaneval\_25 / mistral / scot (Timeout - algorithmic inefficiency)
+    \item humaneval\_54 / mistral / cot (Logic error)
+    \item humaneval\_54 / mistral / scot (Logic error)
+    \item humaneval\_108 / gemini / cot (Edge case handling)
+    \item humaneval\_108 / mistral / cot (Edge case handling)
+    \item humaneval\_108 / mistral / scot (Edge case handling)
+\end{enumerate}
+
+We will select at least 2 of these for detailed debugging analysis in Part 2.
+
+\section{Conclusion}
+
+Part 1 demonstrated that:
+\begin{itemize}
+    \item Both Gemini and Mistral can successfully generate code for straightforward problems
+    \item Gemini 2.5 Flash outperforms Mistral Large on this task set (95\% vs 70\%)
+    \item SCoT prompting improves Gemini's performance but not Mistral's
+    \item Algorithmic optimization and edge case handling remain challenging for LLMs
+    \item 7 failure cases identified for debugging in Part 2
+\end{itemize}
+
+\textbf{Overall Success Rate: 82.5\%} (33/40 solutions passed)
+
+\section{Repository}
+
+All code, prompts, and results are available at:
+
+\url{https://github.com/[your-username]/exercise_1}
+
+\begin{thebibliography}{9}
+\bibitem{humanevalplus}
+EvalPlus Team. HumanEval+ Dataset. 
+\url{https://huggingface.co/datasets/evalplus/humanevalplus}, 2023.
+\end{thebibliography}
+
+\newpage
+\appendix
+\section{Complete Prompts Used}
+
+This appendix contains the complete prompts used for all 10 problems. Each problem was tested with both CoT and SCoT strategies across both model families (Gemini and Mistral).
+
+\subsection{Prompt Construction}
+
+All prompts follow this structure:
+\begin{enumerate}
+    \item Strategy template (CoT or SCoT)
+    \item Problem description (from HumanEval+ dataset)
+    \item Function name specification
+    \item Output instruction (code only, no explanations)
+\end{enumerate}
+
+\subsection{Note on Prompts}
+
+\textbf{Important}: The exact same prompt was used for both Gemini and Mistral for each (problem, strategy) combination. This ensures fair comparison - any performance differences are due to model capabilities, not prompt variations.
+
+The prompts were sent via API calls with the following system message:
+\begin{lstlisting}
+System: "You are an expert Python programmer. 
+Output only code, no explanations."
+\end{lstlisting}
+
+\subsection{Generation Parameters}
+
+For all API calls:
+\begin{itemize}
+    \item Temperature: 0.7 (moderate randomness)
+    \item Max tokens: 2000 (sufficient for any solution)
+    \item Model versions: Gemini 2.5 Flash, Mistral Large Latest
+\end{itemize}
+
+\subsection{Post-Processing}
+
+Generated responses were cleaned to remove markdown code fences if present:
+\begin{lstlisting}[language=Python]
+# Clean up markdown if present
+if "```python" in code:
+    code = code.split("```python")[1].split("```")[0].strip()
+elif "```" in code:
+    code = code.split("```")[1].split("```")[0].strip()
+\end{lstlisting}
+
+This ensures consistent Python function code across all generations.
+
+\end{document}
+

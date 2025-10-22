@@ -1,0 +1,293 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{geometry}
+\usepackage{booktabs}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{amsmath}
+\usepackage{hyperref}
+
+\geometry{margin=1in}
+
+\lstset{
+    basicstyle=\ttfamily\footnotesize,
+    breaklines=true,
+    frame=single,
+    showstringspaces=false,
+    columns=flexible
+}
+
+\title{Exercise 1: Prompting, Debugging, and Innovation\\for Code Generation with LLMs}
+\author{Anh Tran \\ CS520 - Programming Languages}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section{Part 1: Prompt Design and Code Generation}
+
+\subsection{LLM Families}
+
+Two distinct model families were selected:
+
+\begin{itemize}
+    \item \textbf{Gemini 2.5 Flash} (Google DeepMind) - API via \texttt{models/gemini-2.5-flash}
+    \item \textbf{Mistral Large} (Mistral AI) - API via \texttt{mistral-large-latest}
+\end{itemize}
+
+\subsection{Problems Selected}
+
+Ten problems from HumanEval+ dataset \cite{humanevalplus}:
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{lll}
+\toprule
+\textbf{ID} & \textbf{Function} & \textbf{Type} \\
+\midrule
+HumanEval/0 & has\_close\_elements & List comparison \\
+HumanEval/1 & separate\_paren\_groups & String parsing \\
+HumanEval/10 & make\_palindrome & String manipulation \\
+HumanEval/12 & longest & List operation \\
+HumanEval/17 & parse\_music & String to list \\
+HumanEval/25 & factorize & Number theory \\
+HumanEval/31 & is\_prime & Number theory \\
+HumanEval/54 & same\_chars & String comparison \\
+HumanEval/61 & correct\_bracketing & Stack algorithm \\
+HumanEval/108 & count\_nums & Number processing \\
+\bottomrule
+\end{tabular}
+\caption{Selected problems}
+\end{table}
+
+\subsection{Prompting Strategies}
+
+\textbf{Chain-of-Thought (CoT):}
+\begin{lstlisting}
+Task: Implement the target function in Python.
+
+Chain-of-Thought:
+1) Restate the contract and constraints.
+2) Reason about edge cases and examples.
+3) Identify a correct and simple algorithm.
+4) Implement the function.
+
+Output only the function implementation.
+
+Problem: [description]
+Function name: [name]
+\end{lstlisting}
+
+\textbf{Stepwise Chain-of-Thought (SCoT):}
+\begin{lstlisting}
+Task: Implement the target function as specified.
+
+Stepwise Chain-of-Thought Plan:
+1) Restate the function contract precisely.
+2) Identify edge cases and constraints.
+3) Outline a step-by-step algorithm.
+4) Implement the function in Python.
+5) Double-check correctness on edge cases.
+
+Output: Only the function implementation.
+
+Problem: [description]
+Function name: [name]
+\end{lstlisting}
+
+\subsection{Experimental Setup}
+
+\begin{itemize}
+    \item Generated: 40 solutions (10 problems $\times$ 2 families $\times$ 2 strategies)
+    \item API Parameters: Temperature 0.7, Max tokens 2000
+    \item Evaluation: HumanEval+ test suites with 10-second timeout
+    \item Metric: pass@k = $1 - \frac{\binom{n-c}{k}}{\binom{n}{k}}$
+\end{itemize}
+
+\subsection{Results}
+
+\begin{table}[h]
+\centering
+\footnotesize
+\begin{tabular}{llcc}
+\toprule
+\textbf{Problem} & \textbf{Family/Strategy} & \textbf{Result} & \textbf{pass@1} \\
+\midrule
+\multirow{4}{*}{humaneval\_0} & gemini/cot & 1/1 & 1.000 \\
+& gemini/scot & 1/1 & 1.000 \\
+& mistral/cot & 1/1 & 1.000 \\
+& mistral/scot & 1/1 & 1.000 \\
+\midrule
+\multicolumn{4}{c}{... (humaneval\_1, 10, 12, 17, 31, 61 all passed) ...} \\
+\midrule
+\multirow{4}{*}{\textbf{humaneval\_25}} & gemini/cot & 1/1 & 1.000 \\
+& gemini/scot & 1/1 & 1.000 \\
+& mistral/cot & \textbf{0/1} & \textbf{0.000} \\
+& mistral/scot & \textbf{0/1} & \textbf{0.000} \\
+\midrule
+\multirow{4}{*}{\textbf{humaneval\_54}} & gemini/cot & 1/1 & 1.000 \\
+& gemini/scot & 1/1 & 1.000 \\
+& mistral/cot & \textbf{0/1} & \textbf{0.000} \\
+& mistral/scot & \textbf{0/1} & \textbf{0.000} \\
+\midrule
+\multirow{4}{*}{\textbf{humaneval\_108}} & gemini/cot & \textbf{0/1} & \textbf{0.000} \\
+& gemini/scot & 1/1 & 1.000 \\
+& mistral/cot & \textbf{0/1} & \textbf{0.000} \\
+& mistral/scot & \textbf{0/1} & \textbf{0.000} \\
+\bottomrule
+\end{tabular}
+\caption{Results (failures in bold)}
+\end{table}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Family} & \textbf{Strategy} & \textbf{Pass} & \textbf{Fail} & \textbf{Rate} \\
+\midrule
+Gemini & CoT & 9 & 1 & 90\% \\
+Gemini & SCoT & 10 & 0 & \textbf{100\%} \\
+Mistral & CoT & 7 & 3 & 70\% \\
+Mistral & SCoT & 7 & 3 & 70\% \\
+\midrule
+\textbf{Overall} & & \textbf{33} & \textbf{7} & \textbf{82.5\%} \\
+\bottomrule
+\end{tabular}
+\caption{Summary by family and strategy}
+\end{table}
+
+\subsection{Analysis}
+
+\textbf{Key Findings:}
+\begin{enumerate}
+    \item Gemini (95\%) outperforms Mistral (70\%)
+    \item SCoT improves Gemini to 100\% but doesn't help Mistral
+    \item 7 failures identified across 3 problems
+\end{enumerate}
+
+\textbf{Failure Types:}
+\begin{itemize}
+    \item humaneval\_25/mistral: Timeout (inefficient algorithm)
+    \item humaneval\_54/mistral: Logic error
+    \item humaneval\_108: Edge case handling (negative numbers)
+\end{itemize}
+
+\newpage
+\section{Part 2: Debugging and Iterative Improvement}
+
+\subsection{Failure Case 1: [Problem Name]}
+
+\textbf{Failed Solution:}
+\begin{itemize}
+    \item Problem: [ID]
+    \item Family: [gemini/mistral]
+    \item Strategy: [cot/scot]
+    \item Error Type: [description]
+\end{itemize}
+
+\textbf{Original Code:}
+\begin{lstlisting}
+[paste failing code here]
+\end{lstlisting}
+
+\textbf{Self-Repair Prompt Used:}
+\begin{lstlisting}
+[paste self-repair prompt here]
+\end{lstlisting}
+
+\textbf{Fixed Code:}
+\begin{lstlisting}
+[paste fixed code here]
+\end{lstlisting}
+
+\textbf{Analysis:}
+\begin{itemize}
+    \item Why it failed: [explanation]
+    \item How fix works: [explanation]
+    \item Result: [pass@1 after repair]
+\end{itemize}
+
+\subsection{Failure Case 2: [Problem Name]}
+
+[Same structure as above]
+
+\subsection{Cross-Family Comparison}
+
+[Discuss how different families handled the same failures]
+
+\newpage
+\section{Part 3: Innovation - Proposed Strategy}
+
+\subsection{Novel Strategy Description}
+
+\textbf{Strategy Name:} [Your innovation name]
+
+\textbf{Motivation:} [Why you designed this]
+
+\textbf{Workflow:} [Step-by-step description]
+
+\subsection{Prompt Template}
+
+\begin{lstlisting}
+[paste your innovation prompt here]
+\end{lstlisting}
+
+\subsection{Implementation}
+
+Generated solutions for both families across [X] problems.
+
+\subsection{Results}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lccc}
+\toprule
+\textbf{Strategy} & \textbf{Gemini} & \textbf{Mistral} & \textbf{Overall} \\
+\midrule
+CoT & 90\% & 70\% & 80\% \\
+SCoT & 100\% & 70\% & 85\% \\
+\textbf{Innovation} & \textbf{[X]\%} & \textbf{[Y]\%} & \textbf{[Z]\%} \\
+\bottomrule
+\end{tabular}
+\caption{Innovation strategy comparison}
+\end{table}
+
+\subsection{Analysis}
+
+\textbf{Did it improve results?} [Yes/No and why]
+
+\textbf{Differences across families:} [How Gemini vs Mistral responded]
+
+\textbf{Lessons learned:} [What worked, what didn't]
+
+\section{Overall Conclusion}
+
+\textbf{Summary:}
+\begin{itemize}
+    \item Part 1: 82.5\% success (33/40), Gemini superior
+    \item Part 2: [X] failures debugged successfully
+    \item Part 3: [Innovation result]
+\end{itemize}
+
+\textbf{Key Insights:}
+\begin{itemize}
+    \item Structured prompting helps capable models
+    \item Algorithmic knowledge varies between families
+    \item [Your insight from innovation]
+\end{itemize}
+
+\section{Repository}
+
+All code, prompts, tests, and results:\\
+\url{https://github.com/[your-username]/exercise_1}
+
+\begin{thebibliography}{9}
+\bibitem{humanevalplus}
+EvalPlus Team. HumanEval+ Dataset. 
+\url{https://huggingface.co/datasets/evalplus/humanevalplus}, 2023.
+\end{thebibliography}
+
+\end{document}
+

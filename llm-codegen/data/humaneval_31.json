@@ -1,0 +1,7 @@
+{
+  "problem_id": "humaneval_31",
+  "task_id": "HumanEval/31",
+  "function_name": "is_prime",
+  "description": "def is_prime(n):\n    \"\"\"Return true if a given number is prime, and false otherwise.\n    >>> is_prime(6)\n    False\n    >>> is_prime(101)\n    True\n    >>> is_prime(11)\n    True\n    >>> is_prime(13441)\n    True\n    >>> is_prime(61)\n    True\n    >>> is_prime(4)\n    False\n    >>> is_prime(1)\n    False\n    \"\"\"",
+  "canonical_solution": "\n    if n <= 1: return False\n    n_sqrt = 1\n    while n_sqrt ** 2 < n: n_sqrt += 1\n    for i in range(2, min(n_sqrt + 1, n)):\n        if n % i == 0:\n            return False\n    return True\n\n"
+}

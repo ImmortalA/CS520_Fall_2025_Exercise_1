@@ -1,0 +1,11 @@
+{
+  "problem_id": "sum_list",
+  "function_name": "sum_list",
+  "description": "Return the sum of a list of integers.",
+  "examples": [
+    {"inp": [1,2,3], "out": 6}
+  ]
+}
+
+
+

@@ -1,0 +1,9 @@
+{
+  "problem_id": "is_palindrome",
+  "function_name": "is_palindrome",
+  "description": "Return True if the input string is a palindrome ignoring case and non-alphanumeric characters.",
+  "examples": [
+    {"inp": "A man, a plan, a canal: Panama", "out": true}
+  ]
+}
+

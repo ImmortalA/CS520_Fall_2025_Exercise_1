@@ -1,0 +1,7 @@
+{
+  "problem_id": "humaneval_108",
+  "task_id": "HumanEval/108",
+  "function_name": "count_nums",
+  "description": "def count_nums(arr):\n    \"\"\"\n    Write a function count_nums which takes an array of integers and returns\n    the number of elements which has a sum of digits > 0.\n    If a number is negative, then its first signed digit will be negative:\n    e.g. -123 has signed digits -1, 2, and 3.\n    >>> count_nums([]) == 0\n    >>> count_nums([-1, 11, -11]) == 1\n    >>> count_nums([1, 1, 2]) == 3\n    \"\"\"",
+  "canonical_solution": "\n    def judge(x: int) -> int:\n        l = list(str(x))\n        if l[0] == \"-\":\n            l = l[1:]\n            l = list(map(int, l))\n            l[0] = -l[0]\n        else:\n            l = list(map(int, l))\n        return 1 if sum(l) > 0 else 0\n    return sum(map(judge, arr))\n\n"
+}

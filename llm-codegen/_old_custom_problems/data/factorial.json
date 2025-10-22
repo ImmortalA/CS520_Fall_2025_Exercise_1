@@ -1,0 +1,9 @@
+{
+  "problem_id": "factorial",
+  "function_name": "factorial",
+  "description": "Return n! for integer n >= 0.",
+  "examples": [
+    {"inp": 5, "out": 120}
+  ]
+}
+

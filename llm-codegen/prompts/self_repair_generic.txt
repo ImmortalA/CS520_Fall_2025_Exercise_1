@@ -1,0 +1,12 @@
+You are given a failing function implementation and failing test feedback.
+
+Goal: Produce a corrected implementation that fixes the described failures while preserving the contract.
+
+Procedure:
+- Diagnose the cause using the failing inputs/expected outputs.
+- Propose a minimal, correct fix.
+- Provide only the corrected function implementation; no prints.
+
+
+
+

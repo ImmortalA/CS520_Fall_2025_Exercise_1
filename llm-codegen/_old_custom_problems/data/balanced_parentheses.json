@@ -1,0 +1,10 @@
+{
+  "problem_id": "balanced_parentheses",
+  "function_name": "balanced_parentheses",
+  "description": "Return True if parentheses in input string are balanced for (), {}, [].",
+  "examples": [
+    {"inp": "()[]{}", "out": true}
+  ]
+}
+
+

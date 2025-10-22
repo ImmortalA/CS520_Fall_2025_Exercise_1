@@ -1,0 +1,12 @@
+{
+  "problem_id": "longest_common_prefix",
+  "function_name": "longest_common_prefix",
+  "description": "Given a list of strings, return the longest common prefix.",
+  "examples": [
+    {"inp": ["flower", "flow", "flight"], "out": "fl"}
+  ]
+}
+
+
+
+

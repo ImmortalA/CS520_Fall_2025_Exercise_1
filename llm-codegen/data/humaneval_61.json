@@ -1,0 +1,7 @@
+{
+  "problem_id": "humaneval_61",
+  "task_id": "HumanEval/61",
+  "function_name": "correct_bracketing",
+  "description": "def correct_bracketing(brackets: str):\n    \"\"\" brackets is a string of \"(\" and \")\".\n    return True if every opening bracket has a corresponding closing bracket.\n\n    >>> correct_bracketing(\"(\")\n    False\n    >>> correct_bracketing(\"()\")\n    True\n    >>> correct_bracketing(\"(()())\")\n    True\n    >>> correct_bracketing(\")(()\")\n    False\n    \"\"\"",
+  "canonical_solution": "\n\n    cnt = 0\n    for x in brackets:\n        if x == \"(\": cnt += 1\n        if x == \")\": cnt -= 1\n        if cnt < 0: return False\n    return cnt == 0\n\n"
+}

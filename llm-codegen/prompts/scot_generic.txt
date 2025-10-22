@@ -1,0 +1,14 @@
+Task: Implement the target function as specified.
+
+Stepwise Chain-of-Thought Plan:
+1) Restate the function contract precisely.
+2) Identify edge cases and constraints.
+3) Outline a step-by-step algorithm.
+4) Implement the function in Python, adhering to the contract.
+5) Double-check correctness on edge cases.
+
+Output: Only the function implementation; no extra prints.
+
+
+
+
