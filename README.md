@@ -1,210 +1,150 @@
-# Exercise 1: Code Generation with Gemini + Mistral
+# CS520 Exercise 1: LLM Code Generation Evaluation
 
-Complete setup for evaluating code generation across two LLM families.
+This repository contains the implementation and evaluation of different prompting strategies for Large Language Model (LLM) code generation using the HumanEval+ dataset.
 
-## Quick Start (3 Commands)
+## 📊 Key Results Summary
 
-### 1. Generate with Gemini API
-```cmd
-set GEMINI_API_KEY=your_gemini_key
-python generate_with_gemini.py
-```
-**Output**: 20 files in `gemini/` folders
+| Strategy | Gemini | Mistral | Overall |
+|----------|--------|---------|---------|
+| **Chain-of-Thought (CoT)** | 90.0% | 70.0% | 80.0% |
+| **Stepwise Chain-of-Thought (SCoT)** | 100.0% | 70.0% | 85.0% |
+| **Test-Driven Refinement (Innovation)** | 70.0% | 30.0% | 50.0% |
 
-### 2. Generate with Mistral AI API
-```cmd
-set MISTRAL_API_KEY=your_mistral_key
-pip install mistralai
-python generate_with_mistral.py
-```
-**Output**: 20 files in `mistral/` folders
+### Key Findings:
+- **SCoT outperformed CoT** on Gemini (100% vs 90%) but tied on Mistral (70% vs 70%)
+- **Self-repair strategy** successfully fixed 3/3 selected failure cases
+- **Innovation strategy failed** with 50% overall performance vs 85% baseline
+- **Gemini consistently outperformed Mistral** across all strategies
 
-### 3. Run Evaluation
-```cmd
-python llm-codegen\eval\run_eval.py
-type llm-codegen\eval\results.csv
-```
-**Output**: Pass@1 and pass@3 metrics
-
----
-
-## Setup Details
-
-### Get API Keys
-
-**Gemini**: https://aistudio.google.com/app/apikey (Free)
-**Mistral**: https://console.mistral.ai/ (Free tier available)
-
-### Set Environment Variables
-```cmd
-set GEMINI_API_KEY=your_gemini_api_key_here
-set MISTRAL_API_KEY=your_mistral_api_key_here
-```
-
-### Install Dependencies
-```cmd
-pip install google-generativeai mistralai
-```
-
----
-
-## Repository Structure
+## 📁 Repository Structure
 
 ```
-llm-codegen/
-  data/              - 10 HumanEval+ problems (JSON specs)
-  tests/             - 10 comprehensive test files
-  prompts/           - CoT, SCoT, Self-Repair templates
-  generations/       - Generated solutions (40+ files)
-    humaneval_X/
-      gemini/
-        cot/         - Chain-of-Thought
-        scot/        - Stepwise CoT
-      mistral/
-        cot/
-        scot/
-  eval/
-    run_eval.py      - Evaluation script
-    results.csv      - Pass@k metrics
+├── Exercise1_Report.tex          # Complete LaTeX report (874 lines)
+├── Exercise1.pdf                 # Compiled PDF report
+├── generate_with_gemini.py       # Gemini API generation script
+├── generate_with_mistral.py     # Mistral API generation script
+├── generate_self_repair.py      # Self-repair generation script
+├── generate_innovation.py       # Innovation strategy generation script
+└── llm-codegen/
+    ├── data/                     # 10 HumanEval+ problem specifications
+    ├── prompts/                  # 4 prompt templates (CoT, SCoT, self-repair, innovation)
+    ├── generations/              # 60+ generated code solutions
+    ├── tests/                    # Test cases for all problems
+    └── eval/                     # Evaluation scripts and results
+        ├── results.csv           # Part 1 baseline results
+        ├── results_part2.csv     # Part 2 self-repair results  
+        ├── results_part3.csv     # Part 3 innovation results
+        └── run_eval*.py          # Evaluation scripts
 ```
 
----
+## 🎯 Project Overview
 
-## LLM Families
+**Objective**: Evaluate prompting strategies for LLM code generation
 
-1. **Gemini 2.5 Flash** (Google DeepMind)
-   - Model: `models/gemini-2.5-flash`
-   - Access: Google AI Studio API
+**Dataset**: 10 diverse problems from HumanEval+ dataset
 
-2. **Mistral Large** (Mistral AI)
-   - Model: `mistral-large-latest`
-   - Access: Mistral La Plateforme API
+**LLM Families**: 
+- Google DeepMind (Gemini)
+- Mistral AI (Mistral)
 
-Both are distinct model families as required.
+**Strategies Evaluated**:
+1. **Chain-of-Thought (CoT)**: Basic reasoning approach
+2. **Stepwise Chain-of-Thought (SCoT)**: Structured reasoning approach  
+3. **Self-Repair**: Debugging failed solutions with targeted feedback
+4. **Test-Driven Refinement**: Novel strategy focusing on explicit edge case enumeration
 
----
+## 📈 Detailed Results
 
-## Problems (HumanEval+)
+### Part 1: Baseline Evaluation
+- **Total Solutions Generated**: 40 (10 problems × 2 families × 2 strategies)
+- **Gemini SCoT**: Perfect performance (100% pass@1)
+- **Mistral**: Consistent 70% performance across CoT and SCoT
 
-1. humaneval_0 - has_close_elements
-2. humaneval_1 - separate_paren_groups
-3. humaneval_10 - make_palindrome
-4. humaneval_12 - longest
-5. humaneval_17 - parse_music
-6. humaneval_25 - factorize
-7. humaneval_31 - is_prime
-8. humaneval_54 - same_chars
-9. humaneval_61 - correct_bracketing
-10. humaneval_108 - count_nums
+### Part 2: Debugging Analysis
+- **Failures Identified**: 7 total failures across families
+- **Self-Repair Cases**: 3 representative failures selected
+- **Success Rate**: 100% (3/3 failures fixed)
+- **Key Insight**: Targeted debugging feedback with specific test cases enables LLMs to generate correct solutions
 
----
+### Part 3: Innovation Strategy
+- **Novel Approach**: Test-Driven Refinement with explicit edge case enumeration
+- **Performance**: 50% overall vs 85% baseline (-35% decline)
+- **Key Finding**: Explicit edge case enumeration hindered rather than helped model performance
+- **Family Impact**: Gemini more resilient (70%) than Mistral (30%)
 
-## After Generation
+## 📋 Deliverables Checklist
 
-### Run Evaluation
-```cmd
-python llm-codegen\eval\run_eval.py
-```
+✅ **PDF Report**: Complete analysis with methodology, results, and discussion  
+✅ **Prompts**: All prompt templates included in `llm-codegen/prompts/`  
+✅ **Generated Code**: 60+ solutions organized by problem/family/strategy  
+✅ **Test Cases**: HumanEval+ test cases for all problems  
+✅ **Evaluation Scripts**: Complete evaluation harness and results  
+✅ **GitHub Repository**: Clean, professional repository structure
 
-### Check Results
-```cmd
-type llm-codegen\eval\results.csv
-```
+## 🔬 Methodology
 
-Results show:
-- problem_id
-- family (gemini/mistral)
-- strategy (cot/scot)
-- n_samples, n_correct
-- pass@1, pass@3
+1. **Problem Selection**: 10 diverse HumanEval+ problems spanning different difficulty levels
+2. **Generation**: API calls to Gemini and Mistral using different prompting strategies
+3. **Evaluation**: Automated testing using HumanEval+ test cases with pass@1 metrics
+4. **Analysis**: Statistical comparison across strategies and families
 
----
+## 📊 Problem-by-Problem Results
 
-## Next Steps
+| Problem | Gemini CoT | Gemini SCoT | Gemini Innovation | Mistral CoT | Mistral SCoT | Mistral Innovation |
+|---------|------------|-------------|-------------------|-------------|--------------|-------------------|
+| humaneval_0 | 100% | 100% | 0% | 100% | 100% | 0% |
+| humaneval_1 | 100% | 100% | 0% | 100% | 100% | 0% |
+| humaneval_10 | 100% | 100% | 100% | 100% | 100% | 100% |
+| humaneval_108 | 0% | 100% | 100% | 0% | 0% | 0% |
+| humaneval_12 | 100% | 100% | 100% | 100% | 100% | 0% |
+| humaneval_17 | 100% | 100% | 100% | 100% | 100% | 0% |
+| humaneval_25 | 100% | 100% | 0% | 0% | 0% | 0% |
+| humaneval_31 | 100% | 100% | 100% | 100% | 100% | 100% |
+| humaneval_54 | 100% | 100% | 100% | 0% | 0% | 0% |
+| humaneval_61 | 100% | 100% | 100% | 100% | 100% | 100% |
 
-1. **Debug Failures** (Part 2)
-   - Find 2+ problems with `pass@1 = 0.000`
-   - Use `self_repair` strategy
-   - Document before/after
+## 🎓 Academic Contribution
 
-2. **Innovation** (Part 3)
-   - Create novel prompting strategy
-   - Test on both families
-   - Compare results
+This work provides empirical evidence on:
+- **Prompting strategy effectiveness** across different LLM families
+- **Self-repair capabilities** of modern LLMs for code debugging
+- **Limitations of complex prompting** approaches
+- **Family-specific performance patterns** in code generation
 
-3. **Report** 
-   - Fill `llm-codegen/report/METHODS_AND_RESULTS.md`
-   - Export to `Exercise1.pdf`
-   - Include GitHub link
+## 📖 Report
 
-4. **Submit**
-   - Upload PDF to Gradescope
-   - Deadline: Oct 22, 11:59 PM EST
+The complete analysis is documented in `Exercise1_Report.tex` (874 lines) and compiled as `Exercise1.pdf`, including:
+- Detailed methodology and experimental setup
+- Comprehensive results with pass@k metrics
+- Debugging analysis with self-repair examples
+- Innovation strategy discussion and failure analysis
+- Statistical significance testing and family comparisons
 
----
+## 🚀 Usage
 
-## File Count
+To reproduce results:
+1. Set API keys: `GEMINI_API_KEY` and `MISTRAL_API_KEY`
+2. Run generation scripts: `python generate_with_*.py`
+3. Execute evaluation: `python llm-codegen/eval/run_eval.py`
+4. Compile report: `pdflatex Exercise1_Report.tex`
 
-- Data: 10 problems
-- Tests: 10 test files
-- Prompts: 3 templates
-- Generations: 40+ files minimum
-  - 20 Gemini (10×2 strategies)
-  - 20 Mistral (10×2 strategies)
-  - 4+ Self-repair (debugging)
-  - 20+ Innovation strategy
+## 📝 Files Included
 
----
+### Prompts and Workflows
+- `llm-codegen/prompts/cot_generic.txt` - Chain-of-Thought template
+- `llm-codegen/prompts/scot_generic.txt` - Stepwise Chain-of-Thought template
+- `llm-codegen/prompts/self_repair_generic.txt` - Self-repair template
+- `llm-codegen/prompts/test_driven_refinement.txt` - Innovation template
 
-## Troubleshooting
+### Generated Code
+- `llm-codegen/generations/` - Complete set of 60+ generated solutions
+- Organized by problem → family → strategy hierarchy
 
-**Gemini API 404 error?**
-- Run with correct model: `models/gemini-2.5-flash`
-- Check API key is valid
+### Test Cases
+- `llm-codegen/tests/` - HumanEval+ test cases for all 10 problems
+- `llm-codegen/data/` - Problem specifications and constraints
 
-**Mistral API error?**
-- Ensure `mistralai` library installed: `pip install mistralai`
-- Verify API key from https://console.mistral.ai/
-- Check you have API access (free tier available)
-
-**Evaluation fails?**
-- Ensure function names match problem specs
-- Check files are in correct folder structure
-- No top-level code except function definitions
-
----
-
-## Documentation
-
-- **README.md** (this file) - Quick start
-- **QUICK_START.md** - Detailed guide
-- **INSTRUCTIONS.md** - Complete walkthrough
-- **START_HERE.txt** - Overview
-
----
-
-## Time Estimate
-
-- Gemini generation: 3-5 minutes (API)
-- Mistral generation: 3-5 minutes (API)
-- First evaluation: 1 minute
-- Self-repair: 30 minutes
-- Innovation: 1 hour
-- Report: 2-3 hours
-
-**Total: ~4-5 hours**
-
----
-
-## Ready!
-
-Everything is set up. Just run the two generation scripts and evaluate!
-
-```cmd
-python generate_with_gemini.py
-python generate_with_mistral.py
-python llm-codegen\eval\run_eval.py
-```
-
-Good luck! 🚀
-
+### Evaluation Scripts and Results
+- `llm-codegen/eval/run_eval.py` - Main evaluation harness
+- `llm-codegen/eval/results*.csv` - Complete evaluation results
+- `llm-codegen/eval/compare_*.py` - Strategy comparison scripts

@@ -1,0 +1,16 @@
+Task: Implement the target function using a test-driven refinement approach.
+
+Test-Driven Refinement Strategy:
+1) Read the function contract and identify ALL edge cases mentioned or implied.
+2) For each edge case, write out what the expected behavior should be (in comments).
+3) Design your algorithm specifically to handle each identified edge case.
+4) Implement the function in Python.
+5) Mentally trace through your implementation with each edge case to verify correctness.
+6) If any edge case would fail, revise your implementation before outputting.
+
+Output: Only the final refined function implementation that handles all edge cases.
+
+IMPORTANT: Your implementation must be correct on first try. Think through edge cases carefully before coding.
+
+
+

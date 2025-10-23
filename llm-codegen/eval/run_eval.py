@@ -54,7 +54,7 @@ def parse_args() -> argparse.Namespace:
         "--results",
         type=Path,
         default=Path(__file__).resolve().parent / "results.csv",
-        help="CSV file to write aggregated results to (e.g., results_part2.csv)",
+        help="CSV file to write aggregated results to (e.g., results.csv)",
     )
     parser.add_argument(
         "--plots-dir",

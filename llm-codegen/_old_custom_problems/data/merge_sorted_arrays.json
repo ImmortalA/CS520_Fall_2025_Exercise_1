@@ -1,9 +1,0 @@
-{
-  "problem_id": "merge_sorted_arrays",
-  "function_name": "merge_sorted_arrays",
-  "description": "Merge two sorted lists of integers and return a new sorted list.",
-  "examples": [
-    {"inp": {"a": [1,3,5], "b": [2,4,6]}, "out": [1,2,3,4,5,6]}
-  ]
-}
-
