@@ -2,7 +2,7 @@
 
 This repository contains the implementation and evaluation of different prompting strategies for Large Language Model (LLM) code generation using the HumanEval+ dataset.
 
-## 📊 Key Results Summary
+## Key Results Summary
 
 | Strategy | Gemini | Mistral | Overall |
 |----------|--------|---------|---------|
@@ -11,12 +11,12 @@ This repository contains the implementation and evaluation of different promptin
 | **Test-Driven Refinement (Innovation)** | 70.0% | 30.0% | 50.0% |
 
 ### Key Findings:
-- **SCoT outperformed CoT** on Gemini (100% vs 90%) but tied on Mistral (70% vs 70%)
-- **Self-repair strategy** successfully fixed 3/3 selected failure cases
-- **Innovation strategy failed** with 50% overall performance vs 85% baseline
-- **Gemini consistently outperformed Mistral** across all strategies
+- SCoT outperformed CoT on Gemini (100% vs 90%) but tied on Mistral (70% vs 70%)
+- Self-repair strategy successfully fixed all 3 selected failure cases
+- Innovation strategy performed poorly with 50% overall performance vs 85% baseline
+- Gemini consistently outperformed Mistral across all strategies
 
-## 📁 Repository Structure
+## Repository Structure
 
 ```
 ├── Exercise1_Report.tex          # Complete LaTeX report (874 lines)
@@ -37,58 +37,45 @@ This repository contains the implementation and evaluation of different promptin
         └── run_eval*.py          # Evaluation scripts
 ```
 
-## 🎯 Project Overview
+## Project Overview
 
-**Objective**: Evaluate prompting strategies for LLM code generation
+This project evaluates different prompting strategies for LLM code generation using 10 diverse problems from the HumanEval+ dataset. I tested two LLM families (Google DeepMind's Gemini and Mistral AI's Mistral) with four different strategies:
 
-**Dataset**: 10 diverse problems from HumanEval+ dataset
+1. Chain-of-Thought (CoT): Basic reasoning approach
+2. Stepwise Chain-of-Thought (SCoT): Structured reasoning approach  
+3. Self-Repair: Debugging failed solutions with targeted feedback
+4. Test-Driven Refinement: Novel strategy focusing on explicit edge case enumeration
 
-**LLM Families**: 
-- Google DeepMind (Gemini)
-- Mistral AI (Mistral)
-
-**Strategies Evaluated**:
-1. **Chain-of-Thought (CoT)**: Basic reasoning approach
-2. **Stepwise Chain-of-Thought (SCoT)**: Structured reasoning approach  
-3. **Self-Repair**: Debugging failed solutions with targeted feedback
-4. **Test-Driven Refinement**: Novel strategy focusing on explicit edge case enumeration
-
-## 📈 Detailed Results
+## Detailed Results
 
 ### Part 1: Baseline Evaluation
-- **Total Solutions Generated**: 40 (10 problems × 2 families × 2 strategies)
-- **Gemini SCoT**: Perfect performance (100% pass@1)
-- **Mistral**: Consistent 70% performance across CoT and SCoT
+I generated 40 solutions total (10 problems × 2 families × 2 strategies). Gemini's SCoT achieved perfect performance (100% pass@1), while Mistral showed consistent 70% performance across both CoT and SCoT strategies.
 
 ### Part 2: Debugging Analysis
-- **Failures Identified**: 7 total failures across families
-- **Self-Repair Cases**: 3 representative failures selected
-- **Success Rate**: 100% (3/3 failures fixed)
-- **Key Insight**: Targeted debugging feedback with specific test cases enables LLMs to generate correct solutions
+I identified 7 total failures across both families and selected 3 representative cases for self-repair analysis. The self-repair strategy successfully fixed all 3 failures (100% success rate). The key insight was that targeted debugging feedback with specific test cases enables LLMs to generate correct solutions.
 
 ### Part 3: Innovation Strategy
-- **Novel Approach**: Test-Driven Refinement with explicit edge case enumeration
-- **Performance**: 50% overall vs 85% baseline (-35% decline)
-- **Key Finding**: Explicit edge case enumeration hindered rather than helped model performance
-- **Family Impact**: Gemini more resilient (70%) than Mistral (30%)
+My novel Test-Driven Refinement approach focused on explicit edge case enumeration, but it performed poorly with 50% overall performance compared to the 85% baseline (35% decline). The explicit edge case enumeration actually hindered rather than helped model performance. Gemini was more resilient (70%) than Mistral (30%).
 
-## 📋 Deliverables Checklist
+## Deliverables
 
-✅ **PDF Report**: Complete analysis with methodology, results, and discussion  
-✅ **Prompts**: All prompt templates included in `llm-codegen/prompts/`  
-✅ **Generated Code**: 60+ solutions organized by problem/family/strategy  
-✅ **Test Cases**: HumanEval+ test cases for all problems  
-✅ **Evaluation Scripts**: Complete evaluation harness and results  
-✅ **GitHub Repository**: Clean, professional repository structure
+This repository includes all required components:
+- Complete PDF report with methodology, results, and discussion
+- All prompt templates in `llm-codegen/prompts/`
+- 60+ generated solutions organized by problem/family/strategy
+- HumanEval+ test cases for all problems
+- Complete evaluation harness and results
+- Clean, professional repository structure
 
-## 🔬 Methodology
+## Methodology
 
-1. **Problem Selection**: 10 diverse HumanEval+ problems spanning different difficulty levels
-2. **Generation**: API calls to Gemini and Mistral using different prompting strategies
-3. **Evaluation**: Automated testing using HumanEval+ test cases with pass@1 metrics
-4. **Analysis**: Statistical comparison across strategies and families
+I followed this approach:
+1. Selected 10 diverse HumanEval+ problems spanning different difficulty levels
+2. Generated solutions using API calls to Gemini and Mistral with different prompting strategies
+3. Evaluated using automated testing with HumanEval+ test cases and pass@1 metrics
+4. Performed statistical comparison across strategies and families
 
-## 📊 Problem-by-Problem Results
+## Problem-by-Problem Results
 
 | Problem | Gemini CoT | Gemini SCoT | Gemini Innovation | Mistral CoT | Mistral SCoT | Mistral Innovation |
 |---------|------------|-------------|-------------------|-------------|--------------|-------------------|
@@ -103,15 +90,15 @@ This repository contains the implementation and evaluation of different promptin
 | humaneval_54 | 100% | 100% | 100% | 0% | 0% | 0% |
 | humaneval_61 | 100% | 100% | 100% | 100% | 100% | 100% |
 
-## 🎓 Academic Contribution
+## Academic Contribution
 
 This work provides empirical evidence on:
-- **Prompting strategy effectiveness** across different LLM families
-- **Self-repair capabilities** of modern LLMs for code debugging
-- **Limitations of complex prompting** approaches
-- **Family-specific performance patterns** in code generation
+- Prompting strategy effectiveness across different LLM families
+- Self-repair capabilities of modern LLMs for code debugging
+- Limitations of complex prompting approaches
+- Family-specific performance patterns in code generation
 
-## 📖 Report
+## Report
 
 The complete analysis is documented in `Exercise1_Report.tex` (874 lines) and compiled as `Exercise1.pdf`, including:
 - Detailed methodology and experimental setup
@@ -120,7 +107,7 @@ The complete analysis is documented in `Exercise1_Report.tex` (874 lines) and co
 - Innovation strategy discussion and failure analysis
 - Statistical significance testing and family comparisons
 
-## 🚀 Usage
+## Usage
 
 To reproduce results:
 1. Set API keys: `GEMINI_API_KEY` and `MISTRAL_API_KEY`
@@ -128,7 +115,7 @@ To reproduce results:
 3. Execute evaluation: `python llm-codegen/eval/run_eval.py`
 4. Compile report: `pdflatex Exercise1_Report.tex`
 
-## 📝 Files Included
+## Files Included
 
 ### Prompts and Workflows
 - `llm-codegen/prompts/cot_generic.txt` - Chain-of-Thought template
